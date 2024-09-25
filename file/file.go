@@ -12,6 +12,7 @@ import (
 	"io"
 	"os"
 	"os/user"
+	"path/filepath"
 )
 
 // ExpandHomePath returns a path with a leading ~ replaced with the
@@ -57,6 +58,13 @@ func IsSymLink(path string) bool {
 		return false
 	}
 	return s.Mode()&os.ModeSymlink == os.ModeSymlink
+}
+
+// EnsureDirExists ensures that the parent directory of the given path exists
+// and is writable, by creating it if necessary.
+func EnsureDirExists(path string) error {
+	parent := filepath.Dir(ExpandHomePath(path))
+	return os.MkdirAll(parent, os.ModePerm)
 }
 
 // TailN returns last n lines of file
