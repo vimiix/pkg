@@ -8,9 +8,56 @@ package file
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"io"
 	"os"
+	"os/user"
 )
+
+// ExpandHomePath returns a path with a leading ~ replaced with the
+// user's home directory. If the path does not start with a ~, or if
+// the user's home directory cannot be determined, the original path
+// is returned unchanged.
+func ExpandHomePath(s string) string {
+	if s == "" || s[0] != '~' {
+		return s
+	}
+	u, err := user.Current()
+	if err != nil {
+		return s
+	}
+	return u.HomeDir + s[1:]
+}
+
+// Exists checks whether a file exists.
+// It returns false if the given path is empty.
+func Exists(path string) bool {
+	if path == "" {
+		return false
+	}
+	_, err := os.Stat(path)
+	return !errors.Is(err, os.ErrNotExist)
+}
+
+// IsDir checks whether a path is a directory.
+// It returns false if an error occurs.
+func IsDir(path string) bool {
+	s, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	return s.IsDir()
+}
+
+// IsSymLink checks whether a path is a symbolic link.
+// It returns false if an error occurs.
+func IsSymLink(path string) bool {
+	s, err := os.Lstat(path)
+	if err != nil {
+		return false
+	}
+	return s.Mode()&os.ModeSymlink == os.ModeSymlink
+}
 
 // TailN returns last n lines of file
 func TailN(path string, n int) (rs []string, err error) {

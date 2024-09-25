@@ -1,0 +1,8 @@
+{
+    "licenser.author": "vimiix",
+    "licenser.license": "MIT",
+    "licenser.projectName": "pkg",
+    "licenser.disableAutoHeaderInsertion": false,
+    "editor.formatOnSave": true,
+    "go.formatTool": "gofumpt",
+}
